@@ -10,7 +10,7 @@ var hbs             = require('hbs');
 var morgan          = require('morgan');
 var cookieParser    = require('cookie-parser');
 var bodyParser      = require('body-parser');
-var session         = require('express-session');
+var session         = require('cookie-session');
 
 // load config variables
 var configDB        = require('./config/database');
@@ -54,9 +54,10 @@ app.set('view engine', 'ejs');
 
 // required for passport
 app.use(session({
-    secret: 'dat602-secret', // session secret
-    resave: true,
-    saveUninitialized: true
+    name: 'session',
+    keys: ['dat602'],
+    // Cookie Options
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
