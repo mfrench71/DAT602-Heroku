@@ -10,7 +10,7 @@ var hbs             = require('hbs');
 var morgan          = require('morgan');
 var cookieParser    = require('cookie-parser');
 var bodyParser      = require('body-parser');
-var session         = require('cookie-session');
+var session         = require('express-session');
 
 // load config variables
 var configDB        = require('./config/database');
@@ -48,16 +48,21 @@ hbs.registerHelper('grouped_each', function(every, context, options) {
     return out;
 });
 
-// Use Handlebars view engine
+// handlebars helper (conditional)
+hbs.registerHelper('ifEquals', function(a, b, options) {
+    return a === b ? options.fn(this) : options.inverse(this);
+});
+
+// Use handlebars view engine
 app.set('view engine', 'hbs');
+// Use EJS view engine
 app.set('view engine', 'ejs');
 
 // required for passport
 app.use(session({
-    name: 'session',
-    keys: ['dat602'],
-    // Cookie Options
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    secret: 'dat602-secret', // session secret
+    resave: true,
+    saveUninitialized: true
 }));
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
